@@ -678,7 +678,8 @@ public final class CocoaDialog extends Dialog {
             while (it.hasNext()) {
                 ICocoDialogActionContent item = it.next();
                 if (item != null) {
-                    addAction(new CocoaDialogAction(item.getTitle(), item.getStyle(), item.getColor(), new CocoaDialogActionItemClickListenerImpl(i, item, listener)));
+                    addAction(new CocoaDialogAction(item.getTitle(), item.getStyle(), item.getColor(), new CocoaDialogActionItemClickListenerImpl(i, item, listener))
+                            .setKeepShowingWhenActionClick(item.isKeepShowingWhenActionClicked()));
                     i++;
                 }
             }
