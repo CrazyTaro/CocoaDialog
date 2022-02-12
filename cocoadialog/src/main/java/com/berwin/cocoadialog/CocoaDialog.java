@@ -25,9 +25,13 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.berwin.cocoadialog.list.CocoaDialogActionItemClickListenerImpl;
+import com.berwin.cocoadialog.list.ICocoDialogActionContent;
+import com.berwin.cocoadialog.list.OnCocoaDialogActionItemClickListener;
 import com.berwin.cocoadialog.utils.DensityUtil;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public final class CocoaDialog extends Dialog {
@@ -35,6 +39,8 @@ public final class CocoaDialog extends Dialog {
     private LinearLayout mContentPanel;
     private LinearLayout mButtonPanel;
     private LinearLayout mHeaderPanel;
+    private TextView mTitleTextView;
+    private TextView mMessageTextView;
     private View mPanelBorder;
 
     private final ProgressBar mProgressBar;
@@ -84,6 +90,7 @@ public final class CocoaDialog extends Dialog {
         View contentView;
         switch (mPreferredStyle) {
             case alert:
+            case customAlertContent:
                 DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
                 mCustomWidth = Math.round(Math.min(dm.widthPixels, dm.heightPixels) * 0.8f);
                 mCustomHeight = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -102,17 +109,18 @@ public final class CocoaDialog extends Dialog {
                     mProgressBar.setLayoutParams(params);
                     mHeaderPanel.addView(mProgressBar);
                 }
+                if (mPreferredStyle == CocoaDialogStyle.customAlertContent) {
+                    checkCustomContentViewValid();
+                    mHeaderPanel.addView(mCustomContentView);
+                }
                 if (mEditTextList != null) {
-//                    int padding = DensityUtil.dip2px(getContext(), 4);
                     LinearLayout.LayoutParams firstParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     firstParams.topMargin = DensityUtil.dip2px(getContext(), 12);
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     params.topMargin = DensityUtil.dip2px(getContext(), 8);
                     for (int i = 0; i < mEditTextList.size(); i++) {
                         EditText editText = mEditTextList.get(i);
-//                        editText.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_edit_text_background);
                         editText.setLayoutParams(i == 0 ? firstParams : params);
-//                        editText.setPadding(padding, padding, padding, padding);
                         editText.setLines(1);
                         editText.setMaxLines(1);
                         mHeaderPanel.addView(editText);
@@ -120,6 +128,7 @@ public final class CocoaDialog extends Dialog {
                 }
                 break;
             case actionSheet:
+            case customActionSheetContent:
                 mCustomWidth = WindowManager.LayoutParams.MATCH_PARENT;
                 mCustomHeight = WindowManager.LayoutParams.WRAP_CONTENT;
                 contentView = LayoutInflater.from(getContext()).inflate(com.berwin.cocoadialog.R.layout.cocoa_dialog_action_sheet, null, false);
@@ -128,6 +137,10 @@ public final class CocoaDialog extends Dialog {
                 mHeaderPanel = contentView.findViewById(R.id.headPanel);
                 if (mTitle == null && mMessage == null) {
                     mHeaderPanel.setVisibility(View.GONE);
+                }
+                if (mPreferredStyle == CocoaDialogStyle.customActionSheetContent) {
+                    checkCustomContentViewValid();
+                    mHeaderPanel.addView(mCustomContentView);
                 }
                 break;
             case custom:
@@ -147,17 +160,18 @@ public final class CocoaDialog extends Dialog {
             default:
                 return;
         }
-        TextView titleText = contentView.findViewById(R.id.title);
-        TextView messageText = contentView.findViewById(R.id.message);
+
+        mTitleTextView = contentView.findViewById(R.id.title);
+        mMessageTextView = contentView.findViewById(R.id.message);
         if (mTitle != null) {
-            titleText.setText(mTitle);
+            mTitleTextView.setText(mTitle);
         } else {
-            titleText.setVisibility(View.GONE);
+            mTitleTextView.setVisibility(View.GONE);
         }
         if (mMessage != null) {
-            messageText.setText(mMessage);
+            mMessageTextView.setText(mMessage);
         } else {
-            messageText.setVisibility(View.GONE);
+            mMessageTextView.setVisibility(View.GONE);
         }
         mContentPanel = contentView.findViewById(R.id.contentPanel);
         mPanelBorder = contentView.findViewById(R.id.panelBorder);
@@ -191,6 +205,33 @@ public final class CocoaDialog extends Dialog {
     }
 
     /**
+     * Get the dialog title text view,may be null if using {@link CocoaDialogStyle#custom}
+     */
+    @Nullable
+    public TextView getTitleView() {
+        return mTitleTextView;
+    }
+
+    /**
+     * Get the dialog message text view,may be null if using {@link CocoaDialogStyle#custom}
+     */
+    @Nullable
+    public TextView getMessageView() {
+        return mTitleTextView;
+    }
+
+    /**
+     * Get the dialog custom content view,may be null if not using custom styles.
+     * <li>{@link CocoaDialogStyle#custom}
+     * <li>{@link CocoaDialogStyle#customAlertContent}
+     * <li>{@link CocoaDialogStyle#customActionSheetContent}
+     */
+    @Nullable
+    public View getCustomContentView() {
+        return mCustomContentView;
+    }
+
+    /**
      * Set the current progress to the progress bar.
      *
      * @param progress The current progress value, ignored if {@link Builder#addProgressBar(ProgressBarBuildHandler)} not called.
@@ -211,9 +252,16 @@ public final class CocoaDialog extends Dialog {
         return mProgressBar != null ? mProgressBar.getProgress() : 0;
     }
 
+    private void checkCustomContentViewValid() {
+        //check the custom view had been set
+        if (mCustomContentView == null) {
+            throw new IllegalArgumentException("Custom content view can not be null, call CocoaDailog.Builder.setCustomContentView(View) first.");
+        }
+    }
 
     private void resolveActions() {
-        if (mPreferredStyle == CocoaDialogStyle.alert) {
+        if (mPreferredStyle == CocoaDialogStyle.alert
+                || mPreferredStyle == CocoaDialogStyle.customAlertContent) {
             resolveAlertActions();
         } else {
             resolveActionSheetActions();
@@ -319,7 +367,10 @@ public final class CocoaDialog extends Dialog {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
+                //normally dialog will be dismissed after click,but user can require it to keep showing by set this property as 'true'
+                if (!action.isKeepShowingWhenActionClick()) {
+                    dismiss();
+                }
                 if (action.getOnClickListener() != null) {
                     action.getOnClickListener().onClick(CocoaDialog.this);
                 }
@@ -350,7 +401,6 @@ public final class CocoaDialog extends Dialog {
         ProgressBar progressBar;
         List<EditText> editTextList;
         List<CocoaDialogAction> actionList;
-
 
         public Builder(@NonNull Context context) {
             this(context, CocoaDialogStyle.alert);
@@ -458,6 +508,27 @@ public final class CocoaDialog extends Dialog {
         public Builder setCustomContentView(View contentView) {
             this.customContentView = contentView;
             this.preferredStyle = CocoaDialogStyle.custom;
+            return this;
+        }
+
+        /**
+         * Set the custom view for this {@link CocoaDialog},only effective on the style of customs
+         * <li>{@link CocoaDialogStyle#custom}
+         * <li>{@link CocoaDialogStyle#customAlertContent}
+         * <li>{@link CocoaDialogStyle#customActionSheetContent}
+         *
+         * @param contentView The custom content view
+         * @param style       the custom style, only can set those custom styles
+         * @return {@link Builder} instance.
+         */
+        public Builder setCustomContentViewWithStyle(View contentView, @NonNull CocoaDialogStyle style) {
+            this.customContentView = contentView;
+            if (style != CocoaDialogStyle.custom
+                    && style != CocoaDialogStyle.customAlertContent
+                    && style != CocoaDialogStyle.customActionSheetContent) {
+                throw new IllegalArgumentException("dialog style can only set those custom styles which prefix with 'custom' in CocoaDialogStyle");
+            }
+            this.preferredStyle = style;
             return this;
         }
 
@@ -591,6 +662,27 @@ public final class CocoaDialog extends Dialog {
          */
         public Builder addAction(@StringRes int titleRes, @NonNull CocoaDialogActionStyle style, @ColorInt int color, CocoaDialogAction.OnClickListener listener) {
             return addAction(new CocoaDialogAction(context.getString(titleRes), style, color, listener));
+        }
+
+        /**
+         * Add list of actions at once, and show as a action sheet list. If need to set the cancel action you can set the action style as cancel and it will show as like as the cancel action {@link #addAction(CocoaDialogAction)} using {@link CocoaDialogStyle#actionSheet}
+         *
+         * @param items    {@link ICocoDialogActionContent} to create the actions. Note that you can use {@link com.berwin.cocoadialog.list.CocoaDialogActionContent} to create simple items
+         * @param listener {@link OnCocoaDialogActionItemClickListener} item click listener
+         * @return {@link CocoaDialog.Builder} instance.
+         */
+        public Builder setActionSheetList(@NonNull List<? extends ICocoDialogActionContent> items, @Nullable OnCocoaDialogActionItemClickListener listener) {
+            preferredStyle = CocoaDialogStyle.actionSheet;
+            int i = 0;
+            Iterator<? extends ICocoDialogActionContent> it = items.iterator();
+            while (it.hasNext()) {
+                ICocoDialogActionContent item = it.next();
+                if (item != null) {
+                    addAction(new CocoaDialogAction(item.getTitle(), item.getStyle(), item.getColor(), new CocoaDialogActionItemClickListenerImpl(i, item, listener)));
+                    i++;
+                }
+            }
+            return this;
         }
 
         /**

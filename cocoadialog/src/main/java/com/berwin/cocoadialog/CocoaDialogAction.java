@@ -11,6 +11,8 @@ public final class CocoaDialogAction {
     private final CocoaDialogActionStyle style;
     private final int color;
     private final OnClickListener listener;
+    //the dialog will dismiss when action clicked normally,if require the dismiss
+    private boolean keepShowingWhenActionClick = false;
 
     /**
      * An action for a {@link CocoaDialog}, appears as a button.
@@ -37,6 +39,11 @@ public final class CocoaDialogAction {
         this.color = color;
     }
 
+    public CocoaDialogAction setKeepShowingWhenActionClick(boolean show) {
+        this.keepShowingWhenActionClick = show;
+        return this;
+    }
+
     String getTitle() {
         return title;
     }
@@ -52,6 +59,10 @@ public final class CocoaDialogAction {
 
     OnClickListener getOnClickListener() {
         return listener;
+    }
+
+    boolean isKeepShowingWhenActionClick() {
+        return keepShowingWhenActionClick;
     }
 
     public interface OnClickListener {
