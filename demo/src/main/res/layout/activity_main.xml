@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -23,8 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
             android:text="Simple"
             android:textAllCaps="false"
             app:layout_constraintTop_toBottomOf="@+id/alert" />
@@ -34,8 +35,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
             android:text="OK/Cancel"
             android:textAllCaps="false" />
 
@@ -45,8 +46,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
             android:text="Other"
             android:textAllCaps="false" />
 
@@ -55,8 +56,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
             android:text="Alert with Input"
             android:textAllCaps="false" />
 
@@ -65,8 +66,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
             android:text="Alert with Progress Bar"
             android:textAllCaps="false" />
 
@@ -83,9 +84,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
             android:text="OK/Cancel"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_action_sheet_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
+            android:text="Action Sheet Style List"
             android:textAllCaps="false" />
 
         <Button
@@ -93,8 +104,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
             android:text="Other"
             android:textAllCaps="false" />
 
@@ -112,6 +123,22 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="Custom Style"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_custom_alert_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Custom Alert Content Style"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_custom_action_sheet_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Custom Action Sheet Content Style"
             android:textAllCaps="false" />
 
     </LinearLayout>

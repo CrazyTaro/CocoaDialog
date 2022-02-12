@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -21,7 +22,11 @@ import com.berwin.cocoadialog.CocoaDialogActionStyle;
 import com.berwin.cocoadialog.CocoaDialogStyle;
 import com.berwin.cocoadialog.EditTextConfigurationHandler;
 import com.berwin.cocoadialog.ProgressBarBuildHandler;
+import com.berwin.cocoadialog.list.CocoaDialogActionContent;
+import com.berwin.cocoadialog.list.ICocoDialogActionContent;
+import com.berwin.cocoadialog.list.OnCocoaDialogActionItemClickListener;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -41,8 +46,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_alert_with_input).setOnClickListener(this);
         findViewById(R.id.btn_alert_progress_horizontal).setOnClickListener(this);
         findViewById(R.id.btn_action_sheet_ok_cancel).setOnClickListener(this);
+        findViewById(R.id.btn_action_sheet_list).setOnClickListener(this);
         findViewById(R.id.btn_action_sheet_other).setOnClickListener(this);
         findViewById(R.id.btn_custom).setOnClickListener(this);
+        findViewById(R.id.btn_custom_alert_content).setOnClickListener(this);
+        findViewById(R.id.btn_custom_action_sheet_content).setOnClickListener(this);
     }
 
     @Override
@@ -196,6 +204,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }))
                         .build().show();
                 break;
+            case R.id.btn_action_sheet_list:
+                List<? extends ICocoDialogActionContent> items = Arrays.asList(
+                        new CocoaDialogActionContent("First Item"),
+                        new CocoaDialogActionContent("Second Item"),
+                        new CocoaDialogActionContent("Third Item"),
+                        new CocoaDialogActionContent("Fourth Item"),
+                        new CocoaDialogActionContent("Fifth Item"),
+                        new CocoaDialogActionContent("Cancel", CocoaDialogActionStyle.cancel)
+                );
+                new CocoaDialog.Builder(this, CocoaDialogStyle.actionSheet)
+                        .setActionSheetList(items, new OnCocoaDialogActionItemClickListener() {
+                            @Override
+                            public void onItemClick(@NonNull CocoaDialog dialog, int index, @NonNull ICocoDialogActionContent content) {
+                                Toast.makeText(getBaseContext(), content.getTitle() + " clicked.", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .build().show();
+                break;
             case R.id.btn_action_sheet_other:
                 new CocoaDialog.Builder(this, CocoaDialogStyle.actionSheet)
                         .setTitle(R.string.dialog_title)
@@ -212,6 +238,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setCustomContentView(LayoutInflater.from(this).inflate(R.layout.loading_dialog, null))
                         .setCustomHeight(WindowManager.LayoutParams.WRAP_CONTENT)
                         .setCustomWidth(WindowManager.LayoutParams.WRAP_CONTENT)
+                        .build().show();
+                break;
+            case R.id.btn_custom_alert_content:
+                // 通过setContentView可自定义对话框内容，自定义的ContentView中有任何需要交互的控件均需要调用者在外部进行监听处理。
+                // customWidth、customHeight 可设置像素值或WindowManager.LayoutParams.MATCH_PARENT和
+                // WindowManager.LayoutParams.WRAP_CONTENT，若设置为0或除-1和-2之外的其他负数则默认使用WindowManager.LayoutParams.WRAP_CONTENT
+                new CocoaDialog.Builder(this)
+                        .setCustomContentViewWithStyle(LayoutInflater.from(this).inflate(R.layout.loading_dialog, null), CocoaDialogStyle.customAlertContent)
+                        .setCustomHeight(WindowManager.LayoutParams.WRAP_CONTENT)
+                        .setCustomWidth(WindowManager.LayoutParams.WRAP_CONTENT)
+                        .setTitle(R.string.dialog_title)
+                        .setMessage(R.string.dialog_message)
+                        // 自定义按钮字体颜色
+                        .addAction(R.string.cancel, CocoaDialogActionStyle.cancel, Color.RED, null)
+                        // 使用默认字体颜色，normal及cancel风格字体颜色默认为蓝色
+                        .addAction(R.string.ok, CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+                            @Override
+                            public void onClick(CocoaDialog dialog) {
+                                Toast.makeText(getBaseContext(), "OK clicked.", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .build().show();
+                break;
+            case R.id.btn_custom_action_sheet_content:
+                // 通过setContentView可自定义对话框内容，自定义的ContentView中有任何需要交互的控件均需要调用者在外部进行监听处理。
+                // customWidth、customHeight 可设置像素值或WindowManager.LayoutParams.MATCH_PARENT和
+                // WindowManager.LayoutParams.WRAP_CONTENT，若设置为0或除-1和-2之外的其他负数则默认使用WindowManager.LayoutParams.WRAP_CONTENT
+                new CocoaDialog.Builder(this)
+                        .setCustomContentViewWithStyle(LayoutInflater.from(this).inflate(R.layout.loading_dialog, null), CocoaDialogStyle.customActionSheetContent)
+                        .setCustomHeight(WindowManager.LayoutParams.WRAP_CONTENT)
+                        .setCustomWidth(WindowManager.LayoutParams.WRAP_CONTENT)
+                        .setTitle(R.string.dialog_title)
+                        .setMessage(R.string.dialog_message)
+                        .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener() {
+                            @Override
+                            public void onClick(CocoaDialog dialog) {
+                                Toast.makeText(getBaseContext(), "Cancel clicked.", Toast.LENGTH_SHORT).show();
+                            }
+                        }))
+                        .addAction(new CocoaDialogAction("Take Photo", CocoaDialogActionStyle.destructive, new CocoaDialogAction.OnClickListener() {
+                            @Override
+                            public void onClick(CocoaDialog dialog) {
+                                Toast.makeText(getBaseContext(), "Take photo clicked.", Toast.LENGTH_SHORT).show();
+                            }
+                        }))
+                        .addAction(new CocoaDialogAction("Select from Album", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+                            @Override
+                            public void onClick(CocoaDialog dialog) {
+                                Toast.makeText(getBaseContext(), "Select from Album clicked.", Toast.LENGTH_SHORT).show();
+                            }
+                        }))
                         .build().show();
                 break;
         }
