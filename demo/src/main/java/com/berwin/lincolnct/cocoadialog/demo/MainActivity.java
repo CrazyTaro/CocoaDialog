@@ -57,16 +57,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()) {
             case R.id.btn_alert_simple:
-                new CocoaDialog.Builder(this, CocoaDialogStyle.alert)
+                CocoaDialog.Builder builder = new CocoaDialog.Builder(this, CocoaDialogStyle.alert)
                         .setTitle("This is the title")
-                        .setMessage("This is a message")
+                        .setMessage("This dialog has set a custom title margin")
                         .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener() {
                             @Override
                             public void onClick(CocoaDialog dialog) {
                                 Toast.makeText(getBaseContext(), "OK clicked.", Toast.LENGTH_SHORT).show();
                             }
-                        }))
-                        .build().show();
+                        }));
+                builder.getLayoutStyle().titleMarginDp.bottom = 10;
+                builder.build().show();
                 break;
             case R.id.btn_alert_ok_cancel:
                 //不需要响应点击事件时listener直接传入null，设置title和message也支持使用strings资源id。

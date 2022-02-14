@@ -29,6 +29,7 @@ import com.berwin.lincolnct.cocoadialog.list.ICocoDialogActionContent;
 import com.berwin.lincolnct.cocoadialog.list.OnCocoaDialogActionItemClickListener;
 import com.berwin.lincolnct.cocoadialog.progress.IProgressBarProcessor;
 import com.berwin.lincolnct.cocoadialog.progress.ProgressBarProcessorImpl;
+import com.berwin.lincolnct.cocoadialog.style.CocoaDialogLayoutStyle;
 import com.berwin.lincolnct.cocoadialog.utils.DensityUtil;
 
 import java.util.ArrayList;
@@ -53,6 +54,8 @@ public final class CocoaDialog extends Dialog {
     private final CocoaDialogStyle mPreferredStyle;
     private final List<CocoaDialogAction> mActionList;
 
+    private final CocoaDialogLayoutStyle mLayoutStyle;
+
     private int mCustomWidth;
     private int mCustomHeight;
     private int mCustomGravity;
@@ -71,6 +74,7 @@ public final class CocoaDialog extends Dialog {
         this.mCustomWidth = builder.customWidth;
         this.mCustomGravity = builder.customGravity;
         this.mCustomContentView = builder.customContentView;
+        this.mLayoutStyle = builder.layoutStyle;
         if (builder.cancelable != null) {
             setCancelable(builder.cancelable);
         }
@@ -167,6 +171,11 @@ public final class CocoaDialog extends Dialog {
         mMessageTextView = contentView.findViewById(R.id.message);
         if (mTitle != null) {
             mTitleTextView.setText(mTitle);
+            if (mLayoutStyle.titleMarginDp.bottom > 0) {
+                ViewGroup.MarginLayoutParams marginParams = createViewMarginLayoutParams(mTitleTextView);
+                marginParams.bottomMargin = DensityUtil.dip2px(getContext(), mLayoutStyle.titleMarginDp.bottom);
+                mTitleTextView.setLayoutParams(marginParams);
+            }
         } else {
             mTitleTextView.setVisibility(View.GONE);
         }
@@ -263,6 +272,22 @@ public final class CocoaDialog extends Dialog {
      */
     public int getProgress() {
         return mProgressBar != null ? mProgressBar.getProgress() : 0;
+    }
+
+    @NonNull
+    private ViewGroup.MarginLayoutParams createViewMarginLayoutParams(@NonNull View view) {
+        ViewGroup.MarginLayoutParams marginParams = null;
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        if (params == null) {
+            marginParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        } else {
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                marginParams = (ViewGroup.MarginLayoutParams) params;
+            } else {
+                marginParams = new ViewGroup.MarginLayoutParams(params);
+            }
+        }
+        return marginParams;
     }
 
     private void checkCustomContentViewValid() {
@@ -415,6 +440,8 @@ public final class CocoaDialog extends Dialog {
         List<EditText> editTextList;
         List<CocoaDialogAction> actionList;
 
+        CocoaDialogLayoutStyle layoutStyle = new CocoaDialogLayoutStyle();
+
         public Builder(@NonNull Context context) {
             this(context, CocoaDialogStyle.alert);
         }
@@ -422,6 +449,11 @@ public final class CocoaDialog extends Dialog {
         public Builder(@NonNull Context context, @NonNull CocoaDialogStyle preferredStyle) {
             this.context = context;
             this.preferredStyle = preferredStyle;
+        }
+
+        @NonNull
+        public CocoaDialogLayoutStyle getLayoutStyle() {
+            return layoutStyle;
         }
 
         /**
