@@ -1,4 +1,4 @@
-package com.berwin.cocoadialog;
+package com.berwin.lincolnct.cocoadialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -24,12 +24,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.berwin.cocoadialog.list.CocoaDialogActionItemClickListenerImpl;
-import com.berwin.cocoadialog.list.ICocoDialogActionContent;
-import com.berwin.cocoadialog.list.OnCocoaDialogActionItemClickListener;
-import com.berwin.cocoadialog.progress.IProgressBarProcessor;
-import com.berwin.cocoadialog.progress.ProgressBarProcessorImpl;
-import com.berwin.cocoadialog.utils.DensityUtil;
+import com.berwin.lincolnct.cocoadialog.list.CocoaDialogActionItemClickListenerImpl;
+import com.berwin.lincolnct.cocoadialog.list.ICocoDialogActionContent;
+import com.berwin.lincolnct.cocoadialog.list.OnCocoaDialogActionItemClickListener;
+import com.berwin.lincolnct.cocoadialog.progress.IProgressBarProcessor;
+import com.berwin.lincolnct.cocoadialog.progress.ProgressBarProcessorImpl;
+import com.berwin.lincolnct.cocoadialog.utils.DensityUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -95,7 +95,7 @@ public final class CocoaDialog extends Dialog {
                 DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
                 mCustomWidth = Math.round(Math.min(dm.widthPixels, dm.heightPixels) * 0.8f);
                 mCustomHeight = WindowManager.LayoutParams.WRAP_CONTENT;
-                contentView = LayoutInflater.from(getContext()).inflate(com.berwin.cocoadialog.R.layout.cocoa_dialog_alert, null, false);
+                contentView = LayoutInflater.from(getContext()).inflate(com.berwin.lincolnct.cocoadialog.R.layout.cocoa_dialog_alert, null, false);
                 mWindow.setWindowAnimations(mAnimStyleResId == 0 ? android.R.style.Animation_Dialog : mAnimStyleResId);
                 mHeaderPanel = contentView.findViewById(R.id.headPanel);
                 if (mTitle == null && mMessage == null && (mEditTextList == null || mEditTextList.isEmpty())) {
@@ -133,8 +133,8 @@ public final class CocoaDialog extends Dialog {
             case customActionSheetContent:
                 mCustomWidth = WindowManager.LayoutParams.MATCH_PARENT;
                 mCustomHeight = WindowManager.LayoutParams.WRAP_CONTENT;
-                contentView = LayoutInflater.from(getContext()).inflate(com.berwin.cocoadialog.R.layout.cocoa_dialog_action_sheet, null, false);
-                mWindow.setWindowAnimations(com.berwin.cocoadialog.R.style.Animation_CocoaDialog_ActionSheet);
+                contentView = LayoutInflater.from(getContext()).inflate(com.berwin.lincolnct.cocoadialog.R.layout.cocoa_dialog_action_sheet, null, false);
+                mWindow.setWindowAnimations(com.berwin.lincolnct.cocoadialog.R.style.Animation_CocoaDialog_ActionSheet);
                 mWindow.setGravity(Gravity.BOTTOM);
                 mHeaderPanel = contentView.findViewById(R.id.headPanel);
                 if (mTitle == null && mMessage == null) {
@@ -291,7 +291,7 @@ public final class CocoaDialog extends Dialog {
             mPanelBorder.setVisibility(isHeaderHidden ? View.GONE : View.VISIBLE);
             mButtonPanel.setOrientation(LinearLayout.VERTICAL);
             if (isHeaderHidden) {
-                mButtonPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
+                mButtonPanel.setBackgroundResource(com.berwin.lincolnct.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
             }
             if (mActionList.get(0).getStyle() == CocoaDialogActionStyle.cancel && mActionList.size() > 1) { // 调整取消按钮放到最下方
                 CocoaDialogAction cancelAction = mActionList.remove(0);
@@ -334,22 +334,22 @@ public final class CocoaDialog extends Dialog {
     private void resolveActionSheetActions() {
         if (mActionList == null || mActionList.isEmpty()) {
             mPanelBorder.setVisibility(View.GONE);
-            mHeaderPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
+            mHeaderPanel.setBackgroundResource(com.berwin.lincolnct.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
             return;
         }
         if (mActionList.get(0).getStyle() == CocoaDialogActionStyle.cancel) {
             LinearLayout.LayoutParams cancelParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(), 50));
-            mHeaderPanel.setBackgroundResource(mActionList.size() == 1 ? com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius : com.berwin.cocoadialog.R.drawable.cocoa_dialog_top_radius);
+            mHeaderPanel.setBackgroundResource(mActionList.size() == 1 ? com.berwin.lincolnct.cocoadialog.R.drawable.cocoa_dialog_corner_radius : com.berwin.lincolnct.cocoadialog.R.drawable.cocoa_dialog_top_radius);
             final CocoaDialogAction cancelAction = mActionList.remove(0);
             cancelParams.topMargin = DensityUtil.dip2px(getContext(), 10);
             Button button = buildActionButton(cancelAction, cancelParams);
-            button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
+            button.setBackgroundResource(com.berwin.lincolnct.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
             mContentPanel.addView(button);
         }
         boolean isHeaderHidden = mTitle == null && mMessage == null;
         if (isHeaderHidden) {
             mPanelBorder.setVisibility(View.GONE);
-            mButtonPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
+            mButtonPanel.setBackgroundResource(com.berwin.lincolnct.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
         }
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(), 50));
         LinearLayout.LayoutParams borderParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(), 1));
@@ -678,7 +678,7 @@ public final class CocoaDialog extends Dialog {
         /**
          * Add list of actions at once, and show as a action sheet list. If need to set the cancel action you can set the action style as cancel and it will show as like as the cancel action {@link #addAction(CocoaDialogAction)} using {@link CocoaDialogStyle#actionSheet}
          *
-         * @param items    {@link ICocoDialogActionContent} to create the actions. Note that you can use {@link com.berwin.cocoadialog.list.CocoaDialogActionContent} to create simple items
+         * @param items    {@link ICocoDialogActionContent} to create the actions. Note that you can use {@link com.berwin.lincolnct.cocoadialog.list.CocoaDialogActionContent} to create simple items
          * @param listener {@link OnCocoaDialogActionItemClickListener} item click listener
          * @return {@link CocoaDialog.Builder} instance.
          */

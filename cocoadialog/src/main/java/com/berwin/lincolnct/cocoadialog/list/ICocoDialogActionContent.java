@@ -1,10 +1,10 @@
-package com.berwin.cocoadialog.list;
+package com.berwin.lincolnct.cocoadialog.list;
 
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.berwin.cocoadialog.CocoaDialogActionStyle;
+import com.berwin.lincolnct.cocoadialog.CocoaDialogActionStyle;
 
 /**
  * Provide dialog action's content for render the button action in action sheet style.

@@ -1,9 +1,9 @@
-package com.berwin.cocoadialog.list;
+package com.berwin.lincolnct.cocoadialog.list;
 
 import android.support.annotation.NonNull;
 
-import com.berwin.cocoadialog.CocoaDialog;
-import com.berwin.cocoadialog.CocoaDialogAction;
+import com.berwin.lincolnct.cocoadialog.CocoaDialog;
+import com.berwin.lincolnct.cocoadialog.CocoaDialogAction;
 
 public final class CocoaDialogActionItemClickListenerImpl implements CocoaDialogAction.OnClickListener {
     int index;

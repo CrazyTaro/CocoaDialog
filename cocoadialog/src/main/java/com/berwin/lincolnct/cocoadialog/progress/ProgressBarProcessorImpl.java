@@ -1,4 +1,4 @@
-package com.berwin.cocoadialog.progress;
+package com.berwin.lincolnct.cocoadialog.progress;
 
 import android.content.Context;
 import android.os.Build;

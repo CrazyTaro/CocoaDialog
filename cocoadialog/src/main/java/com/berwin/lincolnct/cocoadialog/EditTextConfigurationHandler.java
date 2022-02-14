@@ -1,4 +1,4 @@
-package com.berwin.cocoadialog;
+package com.berwin.lincolnct.cocoadialog;
 
 import android.widget.EditText;
 

@@ -1,4 +1,4 @@
-package com.berwin.cocoadialog;
+package com.berwin.lincolnct.cocoadialog;
 
 public enum CocoaDialogActionStyle {
     normal, cancel, destructive
