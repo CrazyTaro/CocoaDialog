@@ -58,6 +58,11 @@ public class CocoaDialogActionContent implements ICocoDialogActionContent {
         this.color = color;
     }
 
+    public CocoaDialogActionContent setKeepShowingWhenActionClicked(boolean show) {
+        this.keepShowingWhenActionClicked = show;
+        return this;
+    }
+
 
     @Nullable
     @Override
