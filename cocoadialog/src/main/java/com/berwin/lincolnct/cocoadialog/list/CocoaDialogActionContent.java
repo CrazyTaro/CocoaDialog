@@ -15,12 +15,13 @@ public class CocoaDialogActionContent implements ICocoDialogActionContent {
     private final int color;
     //the dialog will dismiss when action clicked normally,if require the dismiss
     private boolean keepShowingWhenActionClicked = false;
+    //anything which attach with this item, like the tag in view
+    private Object attach;
 
     /**
      * An action for a {@link CocoaDialog}, appears as a button.
      *
      * @param title The title of the action.
-     * @param color The {@link Color} of the action's title.
      */
     public CocoaDialogActionContent(String title) {
         this(title, 0xFF007AFF);
@@ -63,6 +64,15 @@ public class CocoaDialogActionContent implements ICocoDialogActionContent {
         return this;
     }
 
+    public CocoaDialogActionContent setAttach(Object attach) {
+        this.attach = attach;
+        return this;
+    }
+
+    @Nullable
+    public Object getAttach() {
+        return attach;
+    }
 
     @Nullable
     @Override
