@@ -1,6 +1,5 @@
 package com.berwin.cocoadialog.demo;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -21,10 +20,10 @@ import com.berwin.cocoadialog.CocoaDialogAction;
 import com.berwin.cocoadialog.CocoaDialogActionStyle;
 import com.berwin.cocoadialog.CocoaDialogStyle;
 import com.berwin.cocoadialog.EditTextConfigurationHandler;
-import com.berwin.cocoadialog.ProgressBarBuildHandler;
 import com.berwin.cocoadialog.list.CocoaDialogActionContent;
 import com.berwin.cocoadialog.list.ICocoDialogActionContent;
 import com.berwin.cocoadialog.list.OnCocoaDialogActionItemClickListener;
+import com.berwin.cocoadialog.progress.ProgressBarProcessorImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -148,12 +147,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 final CocoaDialog dialog = new CocoaDialog.Builder(this)
                         .setTitle("下载文件")
                         .setMessage("正在拼命加载中...")
-                        .addProgressBar(new ProgressBarBuildHandler() {
-                            @Override
-                            public ProgressBar build(Context context) {
-                                return new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
-                            }
-                        }).addAction(new CocoaDialogAction("取消", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener() {
+                        .addProgressBar(new ProgressBarProcessorImpl(new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)))
+                        .addAction(new CocoaDialogAction("取消", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener() {
                             @Override
                             public void onClick(CocoaDialog dialog) {
                                 handler.removeCallbacks(loading);
@@ -166,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }).build();
                 // 模拟网络下载
                 loading = new TestProgressRunner(dialog) {
-
                     @Override
                     void run(CocoaDialog dialog) {
                         Random random = new Random();
@@ -210,7 +204,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new CocoaDialogActionContent("Second Item"),
                         new CocoaDialogActionContent("Third Item"),
                         new CocoaDialogActionContent("Fourth Item"),
-                        new CocoaDialogActionContent("Fifth Item"),
+                        new CocoaDialogActionContent("Fifth Item，keep showing")
+                                .setKeepShowingWhenActionClicked(true),
                         new CocoaDialogActionContent("Cancel", CocoaDialogActionStyle.cancel)
                 );
                 new CocoaDialog.Builder(this, CocoaDialogStyle.actionSheet)
@@ -245,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // customWidth、customHeight 可设置像素值或WindowManager.LayoutParams.MATCH_PARENT和
                 // WindowManager.LayoutParams.WRAP_CONTENT，若设置为0或除-1和-2之外的其他负数则默认使用WindowManager.LayoutParams.WRAP_CONTENT
                 new CocoaDialog.Builder(this)
-                        .setCustomContentViewWithStyle(LayoutInflater.from(this).inflate(R.layout.loading_dialog, null), CocoaDialogStyle.customAlertContent)
+                        .setCustomContentViewWithStyle(LayoutInflater.from(this).inflate(R.layout.layout_custom_view, null), CocoaDialogStyle.customAlertContent)
                         .setCustomHeight(WindowManager.LayoutParams.WRAP_CONTENT)
                         .setCustomWidth(WindowManager.LayoutParams.WRAP_CONTENT)
                         .setTitle(R.string.dialog_title)
@@ -259,14 +254,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 Toast.makeText(getBaseContext(), "OK clicked.", Toast.LENGTH_SHORT).show();
                             }
                         })
-                        .build().show();
+                        .build()
+                        .show();
                 break;
             case R.id.btn_custom_action_sheet_content:
                 // 通过setContentView可自定义对话框内容，自定义的ContentView中有任何需要交互的控件均需要调用者在外部进行监听处理。
                 // customWidth、customHeight 可设置像素值或WindowManager.LayoutParams.MATCH_PARENT和
                 // WindowManager.LayoutParams.WRAP_CONTENT，若设置为0或除-1和-2之外的其他负数则默认使用WindowManager.LayoutParams.WRAP_CONTENT
                 new CocoaDialog.Builder(this)
-                        .setCustomContentViewWithStyle(LayoutInflater.from(this).inflate(R.layout.loading_dialog, null), CocoaDialogStyle.customActionSheetContent)
+                        .setCustomContentViewWithStyle(LayoutInflater.from(this).inflate(R.layout.layout_custom_view, null), CocoaDialogStyle.customActionSheetContent)
                         .setCustomHeight(WindowManager.LayoutParams.WRAP_CONTENT)
                         .setCustomWidth(WindowManager.LayoutParams.WRAP_CONTENT)
                         .setTitle(R.string.dialog_title)
