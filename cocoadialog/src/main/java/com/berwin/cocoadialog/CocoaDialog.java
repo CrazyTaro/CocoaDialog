@@ -22,12 +22,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.berwin.cocoadialog.list.CocoaDialogActionItemClickListenerImpl;
 import com.berwin.cocoadialog.list.ICocoDialogActionContent;
 import com.berwin.cocoadialog.list.OnCocoaDialogActionItemClickListener;
+import com.berwin.cocoadialog.progress.IProgressBarProcessor;
+import com.berwin.cocoadialog.progress.ProgressBarProcessorImpl;
 import com.berwin.cocoadialog.utils.DensityUtil;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public final class CocoaDialog extends Dialog {
     private TextView mMessageTextView;
     private View mPanelBorder;
 
-    private final ProgressBar mProgressBar;
+    private final IProgressBarProcessor mProgressBar;
     private final List<EditText> mEditTextList;
 
     private final CharSequence mTitle;
@@ -106,8 +107,9 @@ public final class CocoaDialog extends Dialog {
                         params.topMargin = DensityUtil.dip2px(getContext(), 10);
                     }
                     params.gravity = Gravity.CENTER_HORIZONTAL;
-                    mProgressBar.setLayoutParams(params);
-                    mHeaderPanel.addView(mProgressBar);
+                    View progressBar = mProgressBar.getProgressBar(getContext());
+                    progressBar.setLayoutParams(params);
+                    mHeaderPanel.addView(progressBar);
                 }
                 if (mPreferredStyle == CocoaDialogStyle.customAlertContent) {
                     checkCustomContentViewValid();
@@ -232,13 +234,24 @@ public final class CocoaDialog extends Dialog {
     }
 
     /**
+     * Get the current progress bar processor interface,which create by delegate
+     *
+     * @return {@link IProgressBarProcessor}
+     */
+    @Nullable
+    public IProgressBarProcessor getProgressBar() {
+        return mProgressBar;
+    }
+
+    /**
      * Set the current progress to the progress bar.
      *
-     * @param progress The current progress value, ignored if {@link Builder#addProgressBar(ProgressBarBuildHandler)} not called.
+     * @param progress The current progress value, ignored if {@link Builder#addProgressBar(IProgressBarProcessor)} not called.
      */
     public void setProgress(int progress) {
         if (mProgressBar != null) {
-            int newProgress = progress < 0 ? 0 : progress > mProgressBar.getMax() ? mProgressBar.getMax() : progress;
+            int newProgress = Math.min(progress, mProgressBar.getProgressMax());
+            newProgress = Math.max(newProgress, mProgressBar.getProgressMin());
             mProgressBar.setProgress(newProgress);
         }
     }
@@ -246,7 +259,7 @@ public final class CocoaDialog extends Dialog {
     /**
      * Get the the current progress of the progress bar.
      *
-     * @return The current progress, return 0 if {@link Builder#addProgressBar(ProgressBarBuildHandler)} did not called.
+     * @return The current progress, return 0 if {@link Builder#addProgressBar(IProgressBarProcessor)} did not called.
      */
     public int getProgress() {
         return mProgressBar != null ? mProgressBar.getProgress() : 0;
@@ -260,8 +273,7 @@ public final class CocoaDialog extends Dialog {
     }
 
     private void resolveActions() {
-        if (mPreferredStyle == CocoaDialogStyle.alert
-                || mPreferredStyle == CocoaDialogStyle.customAlertContent) {
+        if (mPreferredStyle.isGroup(CocoaDialogStyleGroup.alert)) {
             resolveAlertActions();
         } else {
             resolveActionSheetActions();
@@ -383,6 +395,7 @@ public final class CocoaDialog extends Dialog {
     public static class Builder {
 
         final Context context;
+        @NonNull
         CocoaDialogStyle preferredStyle;
 
         Boolean cancelable;
@@ -398,7 +411,7 @@ public final class CocoaDialog extends Dialog {
         int animStyleRes = 0;
         CharSequence title;
         CharSequence message;
-        ProgressBar progressBar;
+        IProgressBarProcessor progressBar;
         List<EditText> editTextList;
         List<CocoaDialogAction> actionList;
 
@@ -523,9 +536,7 @@ public final class CocoaDialog extends Dialog {
          */
         public Builder setCustomContentViewWithStyle(View contentView, @NonNull CocoaDialogStyle style) {
             this.customContentView = contentView;
-            if (style != CocoaDialogStyle.custom
-                    && style != CocoaDialogStyle.customAlertContent
-                    && style != CocoaDialogStyle.customActionSheetContent) {
+            if (!style.isGroup(CocoaDialogStyleGroup.custom)) {
                 throw new IllegalArgumentException("dialog style can only set those custom styles which prefix with 'custom' in CocoaDialogStyle");
             }
             this.preferredStyle = style;
@@ -694,7 +705,7 @@ public final class CocoaDialog extends Dialog {
          */
         public Builder addEditText(EditTextConfigurationHandler configurationHandler) {
             Context context = this.context;
-            if (preferredStyle != CocoaDialogStyle.alert) {
+            if (!preferredStyle.isGroup(CocoaDialogStyleGroup.alert)) {
                 throw new IllegalArgumentException("EditText can only be added to a cocoa dialog of style CocoaDialogStyle.alert");
             }
             EditText editText = new EditText(context);
@@ -714,13 +725,32 @@ public final class CocoaDialog extends Dialog {
          *
          * @param handler The handler to build and configure the progress bar.
          * @return {@link CocoaDialog.Builder} instance.
+         * @deprecated Using {@link #addProgressBar(IProgressBarProcessor)} instead
          */
+        @Deprecated
         public CocoaDialog.Builder addProgressBar(@NonNull ProgressBarBuildHandler handler) {
-            Context context = this.context;
-            if (preferredStyle != CocoaDialogStyle.alert) {
-                throw new IllegalArgumentException("ProgressBar can only be added to a cocoa dialog of style CocoaDialogStyle.alert");
+            if (!preferredStyle.isGroup(CocoaDialogStyleGroup.alert)) {
+                throw new IllegalArgumentException("ProgressBar can only be added to a cocoa dialog of style CocoaDialogStyleGroup.alert");
             }
-            progressBar = handler.build(context);
+            progressBar = new ProgressBarProcessorImpl(handler.build(context));
+            if (editTextList != null && editTextList.size() > 0) {
+                editTextList.clear();
+            }
+            return this;
+        }
+
+        /**
+         * Add a progress bar to this {@link CocoaDialog}, only effective on a cocoa dialog with a style of {@link CocoaDialogStyle#alert}.
+         *
+         * @param handler The handler to build and configure the progress bar.
+         * @return {@link CocoaDialog.Builder} instance.
+         */
+        public CocoaDialog.Builder addProgressBar(@NonNull IProgressBarProcessor handler) {
+            Context context = this.context;
+            if (!preferredStyle.isGroup(CocoaDialogStyleGroup.alert)) {
+                throw new IllegalArgumentException("ProgressBar can only be added to a cocoa dialog of style CocoaDialogStyleGroup.alert");
+            }
+            progressBar = handler;
             if (editTextList != null && editTextList.size() > 0) {
                 editTextList.clear();
             }
