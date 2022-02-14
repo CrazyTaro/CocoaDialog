@@ -228,7 +228,7 @@ public final class CocoaDialog extends Dialog {
      */
     @Nullable
     public TextView getMessageView() {
-        return mTitleTextView;
+        return mMessageTextView;
     }
 
     /**
