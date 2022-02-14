@@ -1,4 +1,4 @@
-package com.berwin.cocoadialog.demo;
+package com.berwin.lincolnct.cocoadialog.demo;
 
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -15,15 +15,15 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.berwin.cocoadialog.CocoaDialog;
-import com.berwin.cocoadialog.CocoaDialogAction;
-import com.berwin.cocoadialog.CocoaDialogActionStyle;
-import com.berwin.cocoadialog.CocoaDialogStyle;
-import com.berwin.cocoadialog.EditTextConfigurationHandler;
-import com.berwin.cocoadialog.list.CocoaDialogActionContent;
-import com.berwin.cocoadialog.list.ICocoDialogActionContent;
-import com.berwin.cocoadialog.list.OnCocoaDialogActionItemClickListener;
-import com.berwin.cocoadialog.progress.ProgressBarProcessorImpl;
+import com.berwin.lincolnct.cocoadialog.CocoaDialog;
+import com.berwin.lincolnct.cocoadialog.CocoaDialogAction;
+import com.berwin.lincolnct.cocoadialog.CocoaDialogActionStyle;
+import com.berwin.lincolnct.cocoadialog.CocoaDialogStyle;
+import com.berwin.lincolnct.cocoadialog.EditTextConfigurationHandler;
+import com.berwin.lincolnct.cocoadialog.list.CocoaDialogActionContent;
+import com.berwin.lincolnct.cocoadialog.list.ICocoDialogActionContent;
+import com.berwin.lincolnct.cocoadialog.list.OnCocoaDialogActionItemClickListener;
+import com.berwin.lincolnct.cocoadialog.progress.ProgressBarProcessorImpl;
 
 import java.util.Arrays;
 import java.util.List;

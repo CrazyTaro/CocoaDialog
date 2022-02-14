@@ -1,4 +1,4 @@
-package com.berwin.cocoadialog.demo;
+package com.berwin.lincolnct.cocoadialog.demo;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
